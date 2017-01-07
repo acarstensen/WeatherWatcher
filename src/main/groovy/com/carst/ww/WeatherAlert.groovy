@@ -56,7 +56,7 @@ class WeatherAlert {
             log.info("     Alert Generated!!!")
             wa = new WeatherAlert(typeCd: 'LowIndoorHumidity', type: 'High Indoor Humidity',
                     description: "The latest indoor humidity was too high!\n" +
-                            "     Humidity: ${wdr.indoorTemperature}\n" +
+                            "     Humidity: ${wdr.indoorHumidity}\n" +
                             "     Threshold: ${highIndoorHumidityThreshhold}\n" +
                             "     Timestamp: ${wdr.timestamp}\n")
         }

@@ -35,8 +35,11 @@ class WeatherWatcher {
     }
 
     void go(File weatherDataCSV, String emailAddress, Integer lowIndoorTempThreshold, Integer highIndoorHumidityThreshold){
-        log.info("Hello I am the Weather Watcher.")
-        log.info("Using weather data csv file: ${weatherDataCSV.absolutePath}")
+        log.info("Hello I am the Weather Watcher.  Here are my settings:\n" +
+                "     acuriteweather.csv file location: ${weatherDataCSV.absolutePath}\n" +
+                "     email address: ${emailAddress}\n" +
+                "     low indoor temperature alert threshold temp: ${lowIndoorTempThreshold}\n" +
+                "     high indoor humidity alert threshold: ${highIndoorHumidityThreshold}")
         List<String> weatherDataRows = FileUtils.readLines(weatherDataCSV)
 
         // make sure the csv file is still in the same format the code expects
