@@ -1,0 +1,34 @@
+group 'com.carst'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'groovy'
+apply plugin: 'java'
+apply plugin: 'idea'
+
+sourceCompatibility = 1.5
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all:2.3.11'
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+    compile 'org.slf4j:slf4j-simple:1.7.12'
+    compile "commons-io:commons-io:2.1"
+    compile 'com.google.api-client:google-api-client:1.22.0'
+    compile 'com.google.oauth-client:google-oauth-client-jetty:1.22.0'
+    compile 'com.google.apis:google-api-services-gmail:v1-rev53-1.22.0'
+    compile group: 'javax.mail', name: 'mail', version: '1.4.1'
+    compile group: 'commons-codec', name: 'commons-codec', version: '1.10'
+}
+
+task watchSomeWeather(type:JavaExec) {
+    String weatherDataCSVLocation = 'tbd'
+    String emailAddress = 'tbd'
+    Integer lowIndoorTempThreshold = 75
+    Integer highIndoorHumidityThreshold = 26
+    args = [weatherDataCSVLocation, emailAddress, lowIndoorTempThreshold, highIndoorHumidityThreshold]
+    main = 'com.carst.ww.WeatherWatcher'
+    classpath = sourceSets.main.runtimeClasspath
+}
