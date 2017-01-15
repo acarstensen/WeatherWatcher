@@ -18,7 +18,7 @@ class LastRunInfo {
         "${label}_LastReadingProcessed"
     }
 
-    private static String getLastReadingProcessedValue(String label, weatherDataRow){
+    private static String getLastReadingProcessedValue(String label, WeatherDataRow weatherDataRow){
         "${getLastReadingProcessedKey(label)}=${weatherDataRow.timestamp.toString()}"
     }
 
@@ -44,5 +44,50 @@ class LastRunInfo {
             }
         }
         alreadyProcessed
+    }
+
+    static String getVal(String key){
+        String val = null
+        FileUtils.readLines(lastRunFile).each { String line ->
+            if(line.startsWith(key)){
+                val = line.substring(line.lastIndexOf('=')+1)
+            }
+        }
+        val
+    }
+
+    static void writeNewVal(String key, String val){
+        ArrayList<String> newLastRunFileContents = new ArrayList<String>()
+        String newLine = "${key}=${val}"
+        boolean found = false
+        FileUtils.readLines(lastRunFile).each { String line ->
+            if(line.startsWith(key)){
+                line = newLine
+                found = true
+            }
+            newLastRunFileContents.add(line)
+        }
+
+        if(!found){
+            newLastRunFileContents.add(newLine)
+        }
+        FileUtils.writeLines(lastRunFile, newLastRunFileContents)
+    }
+
+    static String alertCheckCountKey = 'AlertChecksSinceLastDailySummary'
+    static void incrementAlertCheckCounter(){
+        writeNewVal(this.alertCheckCountKey, (getAlertCheckVal()+1).toString())
+    }
+
+    static Integer getAlertCheckVal(){
+        String val = getVal(this.alertCheckCountKey)
+        if(val == null){
+            val = '0'
+        }
+        Integer.parseInt(val)
+    }
+
+    static void resetAlertCheckCounter(){
+        writeNewVal(this.alertCheckCountKey, '0')
     }
 }

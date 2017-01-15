@@ -8,6 +8,7 @@
  */
 
 package com.carst.ww
+
 import org.apache.commons.io.FileUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -47,15 +48,28 @@ class WeatherWatcher {
 
         // process all alerts
         ArrayList<WeatherAlert> weatherAlerts = new ArrayList<WeatherAlert>()
+        LastRunInfo.incrementAlertCheckCounter()
         weatherAlerts = WeatherAlert.processForLowIndoorTemp(log, weatherAlerts, weatherDataRows, lowIndoorTempThreshold)
         weatherAlerts = WeatherAlert.processForHighIndoorHumidity(log, weatherAlerts, weatherDataRows, highIndoorHumidityThreshold)
 
         // if there are any alerts, send email
         if(weatherAlerts.size() > 0){
-            EmailAlert.sendAlertEmail(log, emailAddress, weatherAlerts)
+            log.info("Sending email for ${weatherAlerts.size()} alert(s).")
+            String body = ""
+            weatherAlerts.each { WeatherAlert wa ->
+                body = "${body}Type: ${wa.type}\n" +
+                        "Description: ${wa.description}\n\n"
+            }
+
+            Email.sendEmail(emailAddress, "Weather Watcher Alert!", body)
         } else {
             log.info("Not emailing as there are no alerts.")
         }
+
+        // send daily summary email
+        DailySummary dailySummary = new DailySummary()
+        dailySummary.sendDailyEmail(emailAddress, weatherDataRows)
+
         log.info("Weather Watcher out.")
     }
 }

@@ -23,28 +23,17 @@ import com.google.api.services.gmail.GmailScopes
 import com.google.api.services.gmail.model.Message
 import com.sun.xml.internal.messaging.saaj.packaging.mime.MessagingException
 import org.apache.commons.codec.binary.Base64
-import org.slf4j.Logger
 
 import javax.mail.Session
 import javax.mail.internet.InternetAddress
 import javax.mail.internet.MimeMessage
 
-class EmailAlert {
+class Email {
 
-    static sendAlertEmail(Logger log, String emailAddress, List<WeatherAlert> weatherAlerts) {
-        log.info("Sending email for ${weatherAlerts.size()} alert(s).")
-        Gmail service = getGmailService()
-
-        String subject = "Weather Watcher Alert!"
-        String body = ""
-        weatherAlerts.each { WeatherAlert wa ->
-            body = "${body}Type: ${wa.type}\n" +
-                    "Description: ${wa.description}\n\n"
-        }
-
+    static sendEmail(String emailAddress, String subject, String body) {
         MimeMessage emailContent = createEmail(emailAddress, emailAddress, subject, body)
         Message message = createMessageWithEmail(emailContent);
-        service.users().messages().send('me', message).execute();
+        getGmailService().users().messages().send('me', message).execute();
     }
 
     // C:\Users\carsta1\.credentials\gmail-java-quickstart
@@ -128,7 +117,7 @@ class EmailAlert {
      */
     public static Credential authorize() throws IOException {
         // Load client secrets.
-        InputStream is = EmailAlert.class.getResourceAsStream("/client_secret.json");
+        InputStream is = Email.class.getResourceAsStream("/client_secret.json");
         GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(is));
 
         // Build flow and trigger user authorization request.

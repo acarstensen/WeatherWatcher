@@ -9,4 +9,4 @@ out
 .classpath
 /bin/
 /.settings/
-.idea
+.idea/*
