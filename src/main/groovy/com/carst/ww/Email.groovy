@@ -31,7 +31,7 @@ import javax.mail.internet.MimeMessage
 class Email {
 
     static sendEmail(String emailAddress, String subject, String body) {
-        MimeMessage emailContent = createEmail(emailAddress, emailAddress, subject, body)
+        MimeMessage emailContent = createEmail(emailAddress, 'acarstensen@gmail.com', subject, body)
         Message message = createMessageWithEmail(emailContent);
         getGmailService().users().messages().send('me', message).execute();
     }
@@ -55,7 +55,22 @@ class Email {
         Session session = Session.getDefaultInstance(props, null);
         MimeMessage email = new MimeMessage(session);
         email.setFrom(new InternetAddress(from));
-        email.addRecipient(javax.mail.Message.RecipientType.TO, new InternetAddress(to));
+
+        String emailDelimiter = null
+        if(to.contains(';')){
+            emailDelimiter = ';'
+        } else if(to.contains(',')) {
+            emailDelimiter = ','
+        }
+
+        if(emailDelimiter == null){
+            email.addRecipient(javax.mail.Message.RecipientType.TO, new InternetAddress(to));
+        } else {
+            to.split(emailDelimiter).each {String toEmail ->
+                email.addRecipient(javax.mail.Message.RecipientType.TO, new InternetAddress(toEmail));
+            }
+        }
+
         email.setSubject(subject);
         email.setText(bodyText);
         return email;
