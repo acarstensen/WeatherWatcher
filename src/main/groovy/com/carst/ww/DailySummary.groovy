@@ -161,7 +161,7 @@ class DailySummary {
                 log.info("     No email has been sent today.")
                 if(now.getDayOfWeek() == DayOfWeek.SATURDAY || now.getDayOfWeek() == DayOfWeek.SUNDAY){
                     log.info("     It's Saturday or Sunday.")
-                    if(now.getHour() > 8){
+                    if(now.getHour() >= 8){
                         log.info("     Let's send one as it's passed 8am.")
                         timeToSend = true
                     } else {
@@ -169,7 +169,7 @@ class DailySummary {
                     }
                 } else {
                     log.info("     It's Monday - Friday.")
-                    if(now.getHour() > 7){
+                    if(now.getHour() >= 7){
                         log.info("     Let's send one as it's passed 7am.")
                         timeToSend = true
                     } else {

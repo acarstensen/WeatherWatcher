@@ -24,23 +24,23 @@ class WeatherWatcher {
                     "- acuriteweather.csv file location\n" +
                     "- email address\n" +
                     "- low indoor temperature alert threshold temp\n" +
-                    "- high indoor humidity alert threshold")
+                    "- high indoor temperature alert threshold temp")
         }
 
         File weatherDataCSV = new File(args[0])
         String emailAddress = args[1]
         Integer lowIndoorTempThreshold = Integer.parseInt(args[2])
-        Integer highIndoorHumidityThreshold = Integer.parseInt(args[3])
+        Integer highIndoorTempThreshold = Integer.parseInt(args[3])
         WeatherWatcher ww = new WeatherWatcher()
-        ww.go(weatherDataCSV, emailAddress, lowIndoorTempThreshold, highIndoorHumidityThreshold)
+        ww.go(weatherDataCSV, emailAddress, lowIndoorTempThreshold, highIndoorTempThreshold)
     }
 
-    void go(File weatherDataCSV, String emailAddress, Integer lowIndoorTempThreshold, Integer highIndoorHumidityThreshold){
+    void go(File weatherDataCSV, String emailAddress, Integer lowIndoorTempThreshold, Integer highIndoorTempThreshold){
         log.info("Hello I am the Weather Watcher.  Here are my settings:\n" +
                 "     acuriteweather.csv file location: ${weatherDataCSV.absolutePath}\n" +
                 "     email address: ${emailAddress}\n" +
                 "     low indoor temperature alert threshold temp: ${lowIndoorTempThreshold}\n" +
-                "     high indoor humidity alert threshold: ${highIndoorHumidityThreshold}")
+                "     high indoor temperature alert threshold temp: ${highIndoorTempThreshold}")
         List<String> weatherDataRows = FileUtils.readLines(weatherDataCSV)
 
         // make sure the csv file is still in the same format the code expects
@@ -50,7 +50,8 @@ class WeatherWatcher {
         ArrayList<WeatherAlert> weatherAlerts = new ArrayList<WeatherAlert>()
         LastRunInfo.incrementAlertCheckCounter()
         weatherAlerts = WeatherAlert.processForLowIndoorTemp(log, weatherAlerts, weatherDataRows, lowIndoorTempThreshold)
-        weatherAlerts = WeatherAlert.processForHighIndoorHumidity(log, weatherAlerts, weatherDataRows, highIndoorHumidityThreshold)
+        weatherAlerts = WeatherAlert.processForHighIndoorTemp(log, weatherAlerts, weatherDataRows, highIndoorTempThreshold)
+        weatherAlerts = WeatherAlert.processForHighIndoorHumidity(log, weatherAlerts, weatherDataRows)
 
         // if there are any alerts, send email
         if(weatherAlerts.size() > 0){
