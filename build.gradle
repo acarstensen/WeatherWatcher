@@ -26,9 +26,9 @@ dependencies {
 task watchSomeWeather(type:JavaExec) {
     String weatherDataCSVLocation = 'tbd'
     String emailAddress = 'tbd'
-    Integer lowIndoorTempThreshold = 75
-    Integer highIndoorHumidityThreshold = 26
-    args = [weatherDataCSVLocation, emailAddress, lowIndoorTempThreshold, highIndoorHumidityThreshold]
+    Integer lowIndoorTempThreshold = 63
+    Integer highIndoorTempThreshold = 78
+    args = [weatherDataCSVLocation, emailAddress, lowIndoorTempThreshold, highIndoorTempThreshold]
     main = 'com.carst.ww.WeatherWatcher'
     classpath = sourceSets.main.runtimeClasspath
 }
