@@ -76,41 +76,42 @@ class WeatherAlert {
         WeatherAlert wa = null
 
         Integer highIndoorHumidityThreshhold = 0
-        String message
-        if(LastRunInfo.readingWasAlreadyProcessed(lastReadingProcessedLabel, wdr)){
-            log.info("     No alert generated as this reading was already processed.")
-            // https://www.reference.com/home-garden/recommended-indoor-humidity-level-homes-f35a6556707f6bb
-        } else if(wdr.outdoorTemperature >= 40){
-            message = "Outdoor temp is >= 40 degrees (current: ${wdr.outdoorTemperature}), humidity indoors should not be more than 45 percent."
-            highIndoorHumidityThreshhold = 45
+        String subMsg
+        if(wdr.outdoorTemperature >= 40){
+            highIndoorHumidityThreshhold = 55
+            subMsg = ">= 40 degrees"
             // Thresholds taken from: http://www.startribune.com/fixit-what-is-the-ideal-winter-indoor-humidity-level/11468916/
             // If outside temperature is 20 to 40 degrees (current: ${wdr.outdoorTemperature}), humidity indoors should not be more than 40 percent.
         } else if(wdr.outdoorTemperature >= 20 && wdr.outdoorTemperature < 40){
-            message = "Outdoor temp is 20 to 40 degrees (current: ${wdr.outdoorTemperature}), humidity indoors should not be more than 40 percent."
             highIndoorHumidityThreshhold = 40
+            subMsg = "20 to 40 degrees"
             // If outside temperature is 10 to 20 degrees (current: ${wdr.outdoorTemperature}), humidity indoors should not be more than 35 percent.
         } else if(wdr.outdoorTemperature >= 10 && wdr.outdoorTemperature < 20){
-            message = "Outdoor temp is 10 to 20 degrees (current: ${wdr.outdoorTemperature}), humidity indoors should not be more than 35 percent."
             highIndoorHumidityThreshhold = 35
+            subMsg = "10 to 20 degrees"
             // If outside temperature is 0 to 10 degrees (current: ${wdr.outdoorTemperature}), humidity indoors should not be more than 30 percent.
         } else if(wdr.outdoorTemperature >= 0 && wdr.outdoorTemperature < 10){
-            message = "Outdoor temp is 0 to 10 degrees (current: ${wdr.outdoorTemperature}), humidity indoors should not be more than 30 percent."
             highIndoorHumidityThreshhold = 30
+            subMsg = "0 to 10 degrees"
             // If outside temperature is 10-below to 0, humidity indoors should not be more than 25 percent.
         } else if(wdr.outdoorTemperature >= -10 && wdr.outdoorTemperature < 0){
-            message = "Outdoor temp is -10 to 0 degrees (current: ${wdr.outdoorTemperature}), humidity indoors should not be more than 25 percent."
             highIndoorHumidityThreshhold = 25
-                // If outside temperature is 20-below to 10-below, humidity indoors should not be more than 20 percent.
+            subMsg = "-10 to 0 degrees"
+            // If outside temperature is 20-below to 10-below, humidity indoors should not be more than 20 percent.
         } else if(wdr.outdoorTemperature >= -20 && wdr.outdoorTemperature < -10){
-            message = "Outdoor temp is -20 to -10 degrees (current: ${wdr.outdoorTemperature}), humidity indoors should not be more than 20 percent."
             highIndoorHumidityThreshhold = 20
-                // If outdoor temperature is lower than 20-below, inside humidity should not be more than 15 percent.
+            subMsg = "-20 to -10 degrees"
+            // If outdoor temperature is lower than 20-below, inside humidity should not be more than 15 percent.
         } else if(wdr.outdoorTemperature < -20){
-            message = "Outdoor temp is less than -20 degrees (current: ${wdr.outdoorTemperature}), humidity indoors should not be more than 15 percent."
             highIndoorHumidityThreshhold = 15
+            subMsg = "less than -20 degrees"
         }
+        String message = "Outdoor temp is ${subMsg} (current: ${wdr.outdoorTemperature}), humidity indoors should not be more than ${highIndoorHumidityThreshhold} percent."
 
-        if(wdr.indoorHumidity > highIndoorHumidityThreshhold){
+        if(LastRunInfo.readingWasAlreadyProcessed(lastReadingProcessedLabel, wdr)){
+            log.info("     No alert generated as this reading was already processed.")
+            // https://www.reference.com/home-garden/recommended-indoor-humidity-level-homes-f35a6556707f6bb
+        } else if(wdr.indoorHumidity > highIndoorHumidityThreshhold){
             log.info("     Alert Generated!!!")
             wa = new WeatherAlert(typeCd: 'LowIndoorHumidity', type: 'High Indoor Humidity',
                     description: "The latest indoor humidity was too high!\n" +
