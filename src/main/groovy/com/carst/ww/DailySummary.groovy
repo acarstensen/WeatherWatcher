@@ -129,8 +129,8 @@ class DailySummary {
         boolean stillLooking = true
         boolean foundSomeYesterdays = false
         LocalDateTime yesterday = LocalDateTime.now().minusDays(1)
-        LocalDateTime startOfYesterday = LocalDateTime.of(yesterday.year, yesterday.monthValue, yesterday.dayOfYear, 0, 0, 0)
-        LocalDateTime endOfYesterday = LocalDateTime.of(yesterday.year, yesterday.monthValue, yesterday.dayOfYear, 23, 59, 59)
+        LocalDateTime startOfYesterday = LocalDateTime.of(yesterday.year, yesterday.monthValue, yesterday.dayOfMonth, 0, 0, 0)
+        LocalDateTime endOfYesterday = LocalDateTime.of(yesterday.year, yesterday.monthValue, yesterday.dayOfMonth, 23, 59, 59)
 
         while(stillLooking){
             WeatherDataRow wdr = new WeatherDataRow(weatherDataRows.get(row))
