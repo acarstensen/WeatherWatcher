@@ -12,6 +12,9 @@ package com.carst.ww
 import org.apache.commons.io.FileUtils
 import org.slf4j.Logger
 
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
+
 class WeatherAlert {
     String typeCd
     String type
@@ -122,6 +125,75 @@ class WeatherAlert {
         
         LastRunInfo.recordLastReadingProcessed(lastReadingProcessedLabel, wdr)
         addNewWeatherAlert(weatherAlerts, wa)
+    }
+
+    static ArrayList<WeatherAlert> processForSprinklerOffOn(Logger log, ArrayList<WeatherAlert> weatherAlerts, List<String> weatherDataRows, Double inchesRainPerWeek){
+        log.info("Processing data for sprinklers on/off alert.")
+
+        // read in from log file the last status
+        Boolean lastIsSprinklerOn = LastRunInfo.isSprinklerOn()
+        log.info("Previous isSprinklerOn from LastRun.info: ${lastIsSprinklerOn}")
+
+        // figure out new status
+        Boolean newIsSprinklerOn = false
+        String msg
+        LocalDate today = LocalDate.now()
+        if(today.monthValue >= 5 && today.monthValue<=9){
+            log.info("It's May through September!!!  Let's see if sprinklers should be on...")
+
+            // grab the last row and the one from a week ago
+            int lastRow = weatherDataRows.size()-1
+            WeatherDataRow lastWdr = new WeatherDataRow(weatherDataRows.get(lastRow))
+            WeatherDataRow weekAgoWdr
+            for(int i=lastRow; i>=0; i--){
+                weekAgoWdr = new WeatherDataRow(weatherDataRows.get(i))
+                if(ChronoUnit.DAYS.between(weekAgoWdr.timestamp, lastWdr.timestamp) >= 7){
+                    // we found our reading, exit loop
+                    i=-1
+                    log.info("Found a reading from a week ago taken at: ${weekAgoWdr.timestamp}")
+                }
+            }
+
+            // calculate how much rain in last week
+            Double rainInLastWeek = lastWdr.rain - weekAgoWdr.rain
+            msg = "lastWdr.rain: ${lastWdr.rain} weekAgoWdr.rain: ${weekAgoWdr.rain} rainInLastWeek: ${rainInLastWeek}"
+            log.info(msg)
+
+            if(rainInLastWeek < inchesRainPerWeek){
+                log.info("We've had < the threshold of ${inchesRainPerWeek} inches of rain this week.  The sprinklers should be on!")
+                newIsSprinklerOn = true
+            } else {
+                log.info("We've had >= the threshold of ${inchesRainPerWeek} inches of rain this week.  The sprinklers should be off.")
+            }
+        } else {
+            log.info("It's October through April :(  No need for sprinklers.")
+            msg = "Winter is coming!"
+        }
+
+
+        // See if we should generate an alert
+        WeatherAlert wa = null
+        log.info("We want the sprinklers ${getOnOffText(newIsSprinklerOn)}.  Last time they were: ${getOnOffText(lastIsSprinklerOn)}")
+        if(lastIsSprinklerOn == newIsSprinklerOn){
+            log.info("Sprinklers were already ${getOnOffText(newIsSprinklerOn)} so we are done.")
+        } else {
+            log.info("Sprinklers were in a different state!?  Setting alert to get them turned ${getOnOffText(newIsSprinklerOn)}.")
+            wa = new WeatherAlert(typeCd: 'SprinklerOffOn', type: "Turn sprinklers ${getOnOffText(newIsSprinklerOn)}",
+                    description: "${msg}\n\nTurn ${getOnOffText(newIsSprinklerOn)} your sprinklers!!")
+        }
+
+        // now that we are all done, write the status out to log and send back the alert or null
+        log.info("Writing out isSprinklerOn to LastRun.info: ${newIsSprinklerOn}")
+        LastRunInfo.writeNewVal(LastRunInfo.isSprinklerOnKey, newIsSprinklerOn.toString())
+        addNewWeatherAlert(weatherAlerts, wa)
+    }
+
+    private static getOnOffText(Boolean isOn){
+        String text = 'off'
+        if(isOn){
+            text = 'on'
+        }
+        text
     }
 
     private static ArrayList<WeatherAlert> addNewWeatherAlert(ArrayList<WeatherAlert> weatherAlerts, WeatherAlert weatherAlert){

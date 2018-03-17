@@ -12,30 +12,30 @@ package com.carst.ww
 import org.apache.commons.io.FileUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-/**
- * Tool to grab the Gherkin from Cucumber feature files and push it to Code Beamer.
- */
+
 class WeatherWatcher {
     Logger log = LoggerFactory.getLogger(this.class)
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
         if(args.size() == 0){
             throw new Exception("\n\nYou need to pass the following program arguments:\n" +
                     "- acuriteweather.csv file location\n" +
                     "- email address\n" +
                     "- low indoor temperature alert threshold temp\n" +
-                    "- high indoor temperature alert threshold temp")
+                    "- high indoor temperature alert threshold temp\n" +
+                    "- inches of rain per week threshold")
         }
 
         File weatherDataCSV = new File(args[0])
         String emailAddress = args[1]
         Integer lowIndoorTempThreshold = Integer.parseInt(args[2])
         Integer highIndoorTempThreshold = Integer.parseInt(args[3])
+        Double inchesRainPerWeek = Double.parseDouble(args[4])
         WeatherWatcher ww = new WeatherWatcher()
-        ww.go(weatherDataCSV, emailAddress, lowIndoorTempThreshold, highIndoorTempThreshold)
+        ww.go(weatherDataCSV, emailAddress, lowIndoorTempThreshold, highIndoorTempThreshold, inchesRainPerWeek)
     }
 
-    void go(File weatherDataCSV, String emailAddress, Integer lowIndoorTempThreshold, Integer highIndoorTempThreshold){
+    void go(File weatherDataCSV, String emailAddress, Integer lowIndoorTempThreshold, Integer highIndoorTempThreshold, Double inchesRainPerWeek){
         log.info("Hello I am the Weather Watcher.  Here are my settings:\n" +
                 "     acuriteweather.csv file location: ${weatherDataCSV.absolutePath}\n" +
                 "     email address: ${emailAddress}\n" +
@@ -52,6 +52,7 @@ class WeatherWatcher {
         weatherAlerts = WeatherAlert.processForLowIndoorTemp(log, weatherAlerts, weatherDataRows, lowIndoorTempThreshold)
         weatherAlerts = WeatherAlert.processForHighIndoorTemp(log, weatherAlerts, weatherDataRows, highIndoorTempThreshold)
         weatherAlerts = WeatherAlert.processForHighIndoorHumidity(log, weatherAlerts, weatherDataRows)
+        weatherAlerts = WeatherAlert.processForSprinklerOffOn(log, weatherAlerts, weatherDataRows, inchesRainPerWeek)
 
         // if there are any alerts, send email
         if(weatherAlerts.size() > 0){

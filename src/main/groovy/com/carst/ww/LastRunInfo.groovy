@@ -90,4 +90,15 @@ class LastRunInfo {
     static void resetAlertCheckCounter(){
         writeNewVal(this.alertCheckCountKey, '0')
     }
+
+    static String isSprinklerOnKey = 'isSprinklerOn'
+    static boolean isSprinklerOn(){
+        boolean sprinklerOn = false
+        FileUtils.readLines(lastRunFile).each { String line ->
+            if(line.startsWith(isSprinklerOnKey) && line.endsWith('true')){
+                sprinklerOn = true
+            }
+        }
+        sprinklerOn
+    }
 }
