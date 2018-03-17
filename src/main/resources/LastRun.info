@@ -1,6 +1,6 @@
-AlertChecksSinceLastDailySummary=8
+AlertChecksSinceLastDailySummary=16
 DailySummaryEmailLastSend=2018-03-17T09:08:45.607
-isSprinklerOn=true
+isSprinklerOn=false
 processForLowIndoorTemp_LastReadingProcessed=2018-03-17T08:12
 processFoHighIndoorTemp_LastReadingProcessed=2018-03-17T08:12
 processForHighIndoorHumidity_LastReadingProcessed=2018-03-17T08:12

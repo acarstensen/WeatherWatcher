@@ -59,7 +59,7 @@ class WeatherWatcher {
             log.info("Sending email for ${weatherAlerts.size()} alert(s).")
             String body = ""
             weatherAlerts.each { WeatherAlert wa ->
-                body = "${body}Type: ${wa.type}\n" +
+                body = "${body}Type: ${wa.type}\n\n" +
                         "Description: ${wa.description}\n\n"
             }
 

@@ -156,15 +156,16 @@ class WeatherAlert {
 
             // calculate how much rain in last week
             Double rainInLastWeek = lastWdr.rain - weekAgoWdr.rain
-            msg = "lastWdr.rain: ${lastWdr.rain} weekAgoWdr.rain: ${weekAgoWdr.rain} rainInLastWeek: ${rainInLastWeek}"
-            log.info(msg)
+            log.info("lastWdr.rain: ${lastWdr.rain} weekAgoWdr.rain: ${weekAgoWdr.rain} rainInLastWeek: ${rainInLastWeek}")
 
             if(rainInLastWeek < inchesRainPerWeek){
-                log.info("We've had < the threshold of ${inchesRainPerWeek} inches of rain this week.  The sprinklers should be on!")
+                msg = "We've had < the threshold of ${inchesRainPerWeek} inches of rain this week.  The sprinklers should be on!"
                 newIsSprinklerOn = true
             } else {
-                log.info("We've had >= the threshold of ${inchesRainPerWeek} inches of rain this week.  The sprinklers should be off.")
+                msg = "We've had >= the threshold of ${inchesRainPerWeek} inches of rain this week.  The sprinklers should be off."
             }
+            log.info(msg)
+            msg = "${msg}\n\nRain in the last week: ${rainInLastWeek} inches"
         } else {
             log.info("It's October through April :(  No need for sprinklers.")
             msg = "Winter is coming!"
