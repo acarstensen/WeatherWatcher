@@ -81,7 +81,7 @@ class WeatherAlert {
         Integer highIndoorHumidityThreshhold = 0
         String subMsg
         if(wdr.outdoorTemperature >= 40){
-            highIndoorHumidityThreshhold = 55
+            highIndoorHumidityThreshhold = 60
             subMsg = ">= 40 degrees"
             // Thresholds taken from: http://www.startribune.com/fixit-what-is-the-ideal-winter-indoor-humidity-level/11468916/
             // If outside temperature is 20 to 40 degrees (current: ${wdr.outdoorTemperature}), humidity indoors should not be more than 40 percent.
