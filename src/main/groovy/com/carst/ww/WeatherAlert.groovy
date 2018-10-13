@@ -49,10 +49,13 @@ class WeatherAlert {
         if(wa != null && lastIsLowIndoorTempAlertOn == false){
             log.info("We haven't emailed yet so setting alert.")
             isLowIndoorTempAlertOnVal = true
-            addNewWeatherAlert(weatherAlerts, wa)
+        } else {
+            // don't send alert
+            wa = null
         }
         LastRunInfo.recordLastReadingProcessed(lastReadingProcessedLabel, wdr)
-        LastRunInfo.writeNewVal(LastRunInfo.isLowIndoorTempAlertOnKey, isLowIndoorTempAlertOnVal)
+        LastRunInfo.writeNewVal(LastRunInfo.isLowIndoorTempAlertOnKey, isLowIndoorTempAlertOnVal.toString())
+        addNewWeatherAlert(weatherAlerts, wa)
     }
 
     static ArrayList<WeatherAlert> processForHighIndoorTemp(Logger log, ArrayList<WeatherAlert> weatherAlerts, List<String> weatherDataRows, Integer highIndoorTempThreshold){
@@ -84,10 +87,13 @@ class WeatherAlert {
         if(wa != null && lastIsHighIndoorTempAlertOn == false){
             log.info("We haven't emailed yet so setting alert.")
             isHighIndoorTempAlertOnVal = true
-            addNewWeatherAlert(weatherAlerts, wa)
+        } else {
+            // don't send alert
+            wa = null
         }
         LastRunInfo.recordLastReadingProcessed(lastReadingProcessedLabel, wdr)
-        LastRunInfo.writeNewVal(LastRunInfo.isHighIndoorTempAlertOnKey, isHighIndoorTempAlertOnVal)
+        LastRunInfo.writeNewVal(LastRunInfo.isHighIndoorTempAlertOnKey, isHighIndoorTempAlertOnVal.toString())
+        addNewWeatherAlert(weatherAlerts, wa)
     }
 
     static ArrayList<WeatherAlert> processForHighIndoorHumidity(Logger log, ArrayList<WeatherAlert> weatherAlerts, List<String> weatherDataRows){
@@ -155,10 +161,13 @@ class WeatherAlert {
         if(wa != null && lastIsHighIndoorHumidityAlertOn == false){
             log.info("We haven't emailed yet so setting alert.")
             isHighIndoorHumidityAlertOnVal = true
-            addNewWeatherAlert(weatherAlerts, wa)
+        } else {
+            // don't send alert
+            wa = null
         }
         LastRunInfo.recordLastReadingProcessed(lastReadingProcessedLabel, wdr)
-        LastRunInfo.writeNewVal(LastRunInfo.isHighIndoorHumidityAlertOnKey, isHighIndoorHumidityAlertOnVal)
+        LastRunInfo.writeNewVal(LastRunInfo.isHighIndoorHumidityAlertOnKey, isHighIndoorHumidityAlertOnVal.toString())
+        addNewWeatherAlert(weatherAlerts, wa)
     }
 
     static ArrayList<WeatherAlert> processForSprinklerOffOn(Logger log, ArrayList<WeatherAlert> weatherAlerts, List<String> weatherDataRows, Double inchesRainPerWeek){
