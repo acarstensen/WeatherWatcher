@@ -93,12 +93,22 @@ class LastRunInfo {
 
     static String isSprinklerOnKey = 'isSprinklerOn'
     static boolean isSprinklerOn(){
-        boolean sprinklerOn = false
-        FileUtils.readLines(lastRunFile).each { String line ->
-            if(line.startsWith(isSprinklerOnKey) && line.endsWith('true')){
-                sprinklerOn = true
-            }
-        }
-        sprinklerOn
+        Boolean.parseBoolean(getVal(isSprinklerOnKey))
     }
+
+    static String isLowIndoorTempAlertOnKey = 'isLowIndoorTempAlertOn'
+    static boolean isLowIndoorTempAlertOn(){
+        Boolean.parseBoolean(getVal(isLowIndoorTempAlertOnKey))
+    }
+
+    static String isHighIndoorTempAlertOnKey = 'isHighIndoorTempAlertOn'
+    static boolean isHighIndoorTempAlertOn(){
+        Boolean.parseBoolean(getVal(isHighIndoorTempAlertOnKey))
+    }
+
+    static String isHighIndoorHumidityAlertOnKey = 'isHighIndoorHumidityAlertOn'
+    static boolean isHighIndoorHumidityAlertOn(){
+        Boolean.parseBoolean(getVal(isHighIndoorHumidityAlertOnKey))
+    }
+
 }

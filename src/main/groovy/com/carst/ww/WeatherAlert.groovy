@@ -20,8 +20,12 @@ class WeatherAlert {
     String type
     String description
 
-    static ArrayList<WeatherAlert> processForLowIndoorTemp(Logger log, ArrayList<WeatherAlert> weatherAlerts, List<String> weatherDataRows, Integer lowIndoorTempThreshhold){
+    static ArrayList<WeatherAlert> processForLowIndoorTemp(Logger log, ArrayList<WeatherAlert> weatherAlerts, List<String> weatherDataRows, Integer lowIndoorTempThreshold){
         log.info("Processing data for Low Indoor Temp alert.")
+
+        // read in from log file the last status
+        Boolean lastIsLowIndoorTempAlertOn = LastRunInfo.isLowIndoorTempAlertOn()
+        log.info("Previous isLowIndoorTempAlertOn from LastRun.info: ${lastIsLowIndoorTempAlertOn}")
 
         // grab the last row only
         WeatherDataRow wdr = new WeatherDataRow(weatherDataRows.get(weatherDataRows.size()-1))
@@ -31,21 +35,32 @@ class WeatherAlert {
         WeatherAlert wa = null
         if(LastRunInfo.readingWasAlreadyProcessed(lastReadingProcessedLabel, wdr)){
             log.info("     No alert generated as this reading was already processed.")
-        } else if(wdr.indoorTemperature < lowIndoorTempThreshhold){
+        } else if(wdr.indoorTemperature < lowIndoorTempThreshold){
             log.info("     Alert Generated!!!")
             wa = new WeatherAlert(typeCd: 'LowIndoorTemp', type: 'Low Indoor Temperature',
                     description: "The latest indoor temperature was too low!\n" +
                             "     Temp: ${wdr.indoorTemperature}\n" +
-                            "     Threshold: ${lowIndoorTempThreshhold}\n" +
+                            "     Threshold: ${lowIndoorTempThreshold}\n" +
                             "     Timestamp: ${wdr.timestamp}\n")
         }
 
+        // See if we should generate an alert
+        boolean isLowIndoorTempAlertOnVal = false
+        if(wa != null && lastIsLowIndoorTempAlertOn == false){
+            log.info("We haven't emailed yet so setting alert.")
+            isLowIndoorTempAlertOnVal = true
+            addNewWeatherAlert(weatherAlerts, wa)
+        }
         LastRunInfo.recordLastReadingProcessed(lastReadingProcessedLabel, wdr)
-        addNewWeatherAlert(weatherAlerts, wa)
+        LastRunInfo.writeNewVal(LastRunInfo.isLowIndoorTempAlertOnKey, isLowIndoorTempAlertOnVal)
     }
 
-    static ArrayList<WeatherAlert> processForHighIndoorTemp(Logger log, ArrayList<WeatherAlert> weatherAlerts, List<String> weatherDataRows, Integer highIndoorTempThreshhold){
+    static ArrayList<WeatherAlert> processForHighIndoorTemp(Logger log, ArrayList<WeatherAlert> weatherAlerts, List<String> weatherDataRows, Integer highIndoorTempThreshold){
         log.info("Processing data for High Indoor Temp alert.")
+
+        // read in from log file the last status
+        Boolean lastIsHighIndoorTempAlertOn = LastRunInfo.isHighIndoorTempAlertOn()
+        log.info("Previous isHighIndoorTempAlertOn from LastRun.info: ${lastIsHighIndoorTempAlertOn}")
 
         // grab the last row only
         WeatherDataRow wdr = new WeatherDataRow(weatherDataRows.get(weatherDataRows.size()-1))
@@ -55,22 +70,34 @@ class WeatherAlert {
         WeatherAlert wa = null
         if(LastRunInfo.readingWasAlreadyProcessed(lastReadingProcessedLabel, wdr)){
             log.info("     No alert generated as this reading was already processed.")
-        } else if(wdr.indoorTemperature > highIndoorTempThreshhold){
+        } else if(wdr.indoorTemperature > highIndoorTempThreshold){
             log.info("     Alert Generated!!!")
             wa = new WeatherAlert(typeCd: 'HighIndoorTemp', type: 'High Indoor Temperature',
                     description: "The latest indoor temperature was too high!\n" +
                             "     Temp: ${wdr.indoorTemperature}\n" +
-                            "     Threshold: ${highIndoorTempThreshhold}\n" +
+                            "     Threshold: ${highIndoorTempThreshold}\n" +
                             "     Timestamp: ${wdr.timestamp}\n")
         }
 
+        // See if we should generate an alert
+        boolean isHighIndoorTempAlertOnVal = false
+        if(wa != null && lastIsHighIndoorTempAlertOn == false){
+            log.info("We haven't emailed yet so setting alert.")
+            isHighIndoorTempAlertOnVal = true
+            addNewWeatherAlert(weatherAlerts, wa)
+        }
         LastRunInfo.recordLastReadingProcessed(lastReadingProcessedLabel, wdr)
-        addNewWeatherAlert(weatherAlerts, wa)
+        LastRunInfo.writeNewVal(LastRunInfo.isHighIndoorTempAlertOnKey, isHighIndoorTempAlertOnVal)
     }
 
     static ArrayList<WeatherAlert> processForHighIndoorHumidity(Logger log, ArrayList<WeatherAlert> weatherAlerts, List<String> weatherDataRows){
         log.info("Processing data for High Indoor Humidity alert.")
 
+        // read in from log file the last status
+        Boolean lastIsHighIndoorHumidityAlertOn = LastRunInfo.isHighIndoorHumidityAlertOn()
+        log.info("Previous isHighIndoorHumidityAlertOn from LastRun.info: ${lastIsHighIndoorHumidityAlertOn}")
+
+        // figure out new status
         // grab the last row only
         WeatherDataRow wdr = new WeatherDataRow(weatherDataRows.get(weatherDataRows.size()-1))
 
@@ -78,43 +105,43 @@ class WeatherAlert {
         String lastReadingProcessedLabel = 'processForHighIndoorHumidity'
         WeatherAlert wa = null
 
-        Integer highIndoorHumidityThreshhold = 0
+        Integer highIndoorHumidityThreshold = 0
         String subMsg
         if(wdr.outdoorTemperature >= 40){
-            highIndoorHumidityThreshhold = 60
+            highIndoorHumidityThreshold = 60
             subMsg = ">= 40 degrees"
             // Thresholds taken from: http://www.startribune.com/fixit-what-is-the-ideal-winter-indoor-humidity-level/11468916/
             // If outside temperature is 20 to 40 degrees (current: ${wdr.outdoorTemperature}), humidity indoors should not be more than 40 percent.
         } else if(wdr.outdoorTemperature >= 20 && wdr.outdoorTemperature < 40){
-            highIndoorHumidityThreshhold = 40
+            highIndoorHumidityThreshold = 40
             subMsg = "20 to 40 degrees"
             // If outside temperature is 10 to 20 degrees (current: ${wdr.outdoorTemperature}), humidity indoors should not be more than 35 percent.
         } else if(wdr.outdoorTemperature >= 10 && wdr.outdoorTemperature < 20){
-            highIndoorHumidityThreshhold = 35
+            highIndoorHumidityThreshold = 35
             subMsg = "10 to 20 degrees"
             // If outside temperature is 0 to 10 degrees (current: ${wdr.outdoorTemperature}), humidity indoors should not be more than 30 percent.
         } else if(wdr.outdoorTemperature >= 0 && wdr.outdoorTemperature < 10){
-            highIndoorHumidityThreshhold = 30
+            highIndoorHumidityThreshold = 30
             subMsg = "0 to 10 degrees"
             // If outside temperature is 10-below to 0, humidity indoors should not be more than 25 percent.
         } else if(wdr.outdoorTemperature >= -10 && wdr.outdoorTemperature < 0){
-            highIndoorHumidityThreshhold = 25
+            highIndoorHumidityThreshold = 25
             subMsg = "-10 to 0 degrees"
             // If outside temperature is 20-below to 10-below, humidity indoors should not be more than 20 percent.
         } else if(wdr.outdoorTemperature >= -20 && wdr.outdoorTemperature < -10){
-            highIndoorHumidityThreshhold = 20
+            highIndoorHumidityThreshold = 20
             subMsg = "-20 to -10 degrees"
             // If outdoor temperature is lower than 20-below, inside humidity should not be more than 15 percent.
         } else if(wdr.outdoorTemperature < -20){
-            highIndoorHumidityThreshhold = 15
+            highIndoorHumidityThreshold = 15
             subMsg = "less than -20 degrees"
         }
-        String message = "Outdoor temp is ${subMsg} (current: ${wdr.outdoorTemperature}), humidity indoors should not be more than ${highIndoorHumidityThreshhold} percent."
+        String message = "Outdoor temp is ${subMsg} (current: ${wdr.outdoorTemperature}), humidity indoors should not be more than ${highIndoorHumidityThreshold} percent."
 
         if(LastRunInfo.readingWasAlreadyProcessed(lastReadingProcessedLabel, wdr)){
             log.info("     No alert generated as this reading was already processed.")
             // https://www.reference.com/home-garden/recommended-indoor-humidity-level-homes-f35a6556707f6bb
-        } else if(wdr.indoorHumidity > highIndoorHumidityThreshhold){
+        } else if(wdr.indoorHumidity > highIndoorHumidityThreshold){
             log.info("     Alert Generated!!!")
             wa = new WeatherAlert(typeCd: 'LowIndoorHumidity', type: 'High Indoor Humidity',
                     description: "The latest indoor humidity was too high!\n" +
@@ -123,8 +150,15 @@ class WeatherAlert {
                             "     Timestamp: ${wdr.timestamp}\n")
         }
         
+        // See if we should generate an alert
+        boolean isHighIndoorHumidityAlertOnVal = false
+        if(wa != null && lastIsHighIndoorHumidityAlertOn == false){
+            log.info("We haven't emailed yet so setting alert.")
+            isHighIndoorHumidityAlertOnVal = true
+            addNewWeatherAlert(weatherAlerts, wa)
+        }
         LastRunInfo.recordLastReadingProcessed(lastReadingProcessedLabel, wdr)
-        addNewWeatherAlert(weatherAlerts, wa)
+        LastRunInfo.writeNewVal(LastRunInfo.isHighIndoorHumidityAlertOnKey, isHighIndoorHumidityAlertOnVal)
     }
 
     static ArrayList<WeatherAlert> processForSprinklerOffOn(Logger log, ArrayList<WeatherAlert> weatherAlerts, List<String> weatherDataRows, Double inchesRainPerWeek){
@@ -189,7 +223,7 @@ class WeatherAlert {
         addNewWeatherAlert(weatherAlerts, wa)
     }
 
-    private static getOnOffText(Boolean isOn){
+    private static String getOnOffText(Boolean isOn){
         String text = 'off'
         if(isOn){
             text = 'on'

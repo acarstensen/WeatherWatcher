@@ -1,6 +1,9 @@
-AlertChecksSinceLastDailySummary=16
-DailySummaryEmailLastSend=2018-03-17T09:08:45.607
+AlertChecksSinceLastDailySummary=18
+DailySummaryEmailLastSend=2018-10-13T08:13:34.318
 isSprinklerOn=false
-processForLowIndoorTemp_LastReadingProcessed=2018-03-17T08:12
-processFoHighIndoorTemp_LastReadingProcessed=2018-03-17T08:12
-processForHighIndoorHumidity_LastReadingProcessed=2018-03-17T08:12
+isLowIndoorTempAlertOn=false
+isHighIndoorTempAlertOn=false
+isHighIndoorHumidityAlertOn=false
+processForLowIndoorTemp_LastReadingProcessed=2018-10-12T23:12
+processFoHighIndoorTemp_LastReadingProcessed=2018-10-12T23:12
+processForHighIndoorHumidity_LastReadingProcessed=2018-10-12T23:12
