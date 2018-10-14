@@ -46,15 +46,18 @@ class WeatherAlert {
 
         // See if we should generate an alert
         boolean isLowIndoorTempAlertOnVal = false
-        if(wa != null && lastIsLowIndoorTempAlertOn == false){
-            log.info("We haven't emailed yet so setting alert.")
+        if(wa != null) {
             isLowIndoorTempAlertOnVal = true
-        } else {
-            // don't send alert
+        }
+        LastRunInfo.writeNewVal(LastRunInfo.isLowIndoorTempAlertOnKey, isLowIndoorTempAlertOnVal.toString())
+
+        if(wa != null && lastIsLowIndoorTempAlertOn == false){
+            log.info("     We haven't emailed yet so setting alert.")
+        } else if(wa != null) {
+            log.info("     We already emailed on the alert so not creating it.")
             wa = null
         }
         LastRunInfo.recordLastReadingProcessed(lastReadingProcessedLabel, wdr)
-        LastRunInfo.writeNewVal(LastRunInfo.isLowIndoorTempAlertOnKey, isLowIndoorTempAlertOnVal.toString())
         addNewWeatherAlert(weatherAlerts, wa)
     }
 
@@ -84,15 +87,18 @@ class WeatherAlert {
 
         // See if we should generate an alert
         boolean isHighIndoorTempAlertOnVal = false
-        if(wa != null && lastIsHighIndoorTempAlertOn == false){
-            log.info("We haven't emailed yet so setting alert.")
+        if(wa != null) {
             isHighIndoorTempAlertOnVal = true
-        } else {
-            // don't send alert
+        }
+        LastRunInfo.writeNewVal(LastRunInfo.isHighIndoorTempAlertOnKey, isHighIndoorTempAlertOnVal.toString())
+
+        if(wa != null && lastIsHighIndoorTempAlertOn == false){
+            log.info("     We haven't emailed yet so setting alert.")
+        } else if(wa != null) {
+            log.info("     We already emailed on the alert so not creating it.")
             wa = null
         }
         LastRunInfo.recordLastReadingProcessed(lastReadingProcessedLabel, wdr)
-        LastRunInfo.writeNewVal(LastRunInfo.isHighIndoorTempAlertOnKey, isHighIndoorTempAlertOnVal.toString())
         addNewWeatherAlert(weatherAlerts, wa)
     }
 
@@ -158,15 +164,18 @@ class WeatherAlert {
         
         // See if we should generate an alert
         boolean isHighIndoorHumidityAlertOnVal = false
-        if(wa != null && lastIsHighIndoorHumidityAlertOn == false){
-            log.info("We haven't emailed yet so setting alert.")
+        if(wa != null) {
             isHighIndoorHumidityAlertOnVal = true
-        } else {
-            // don't send alert
+        }
+        LastRunInfo.writeNewVal(LastRunInfo.isHighIndoorHumidityAlertOnKey, isHighIndoorHumidityAlertOnVal.toString())
+
+        if(wa != null && lastIsHighIndoorHumidityAlertOn == false){
+            log.info("     We haven't emailed yet so setting alert.")
+        } else if(wa != null) {
+            log.info("     We already emailed on the alert so not creating it.")
             wa = null
         }
         LastRunInfo.recordLastReadingProcessed(lastReadingProcessedLabel, wdr)
-        LastRunInfo.writeNewVal(LastRunInfo.isHighIndoorHumidityAlertOnKey, isHighIndoorHumidityAlertOnVal.toString())
         addNewWeatherAlert(weatherAlerts, wa)
     }
 
