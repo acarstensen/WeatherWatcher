@@ -125,7 +125,7 @@ class WeatherAlert {
             // Thresholds taken from: http://www.startribune.com/fixit-what-is-the-ideal-winter-indoor-humidity-level/11468916/
             // If outside temperature is 20 to 40 degrees (current: ${wdr.outdoorTemperature}), humidity indoors should not be more than 40 percent.
         } else if(wdr.outdoorTemperature >= 20 && wdr.outdoorTemperature < 40){
-            highIndoorHumidityThreshold = 40
+            highIndoorHumidityThreshold = 45
             subMsg = "20 to 40 degrees"
             // If outside temperature is 10 to 20 degrees (current: ${wdr.outdoorTemperature}), humidity indoors should not be more than 35 percent.
         } else if(wdr.outdoorTemperature >= 10 && wdr.outdoorTemperature < 20){
