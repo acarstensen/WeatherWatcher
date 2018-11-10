@@ -129,11 +129,11 @@ class WeatherAlert {
             subMsg = "20 to 40 degrees"
             // If outside temperature is 10 to 20 degrees (current: ${wdr.outdoorTemperature}), humidity indoors should not be more than 35 percent.
         } else if(wdr.outdoorTemperature >= 10 && wdr.outdoorTemperature < 20){
-            highIndoorHumidityThreshold = 35
+            highIndoorHumidityThreshold = 40
             subMsg = "10 to 20 degrees"
             // If outside temperature is 0 to 10 degrees (current: ${wdr.outdoorTemperature}), humidity indoors should not be more than 30 percent.
         } else if(wdr.outdoorTemperature >= 0 && wdr.outdoorTemperature < 10){
-            highIndoorHumidityThreshold = 30
+            highIndoorHumidityThreshold = 35
             subMsg = "0 to 10 degrees"
             // If outside temperature is 10-below to 0, humidity indoors should not be more than 25 percent.
         } else if(wdr.outdoorTemperature >= -10 && wdr.outdoorTemperature < 0){
