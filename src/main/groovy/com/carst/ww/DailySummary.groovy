@@ -23,15 +23,24 @@ class DailySummary {
         log.info("Seeing if it's time to send the daily summary email.")
         if(timeToSendDailySummaryEmail()){
             String emailBody = makeEmailBody(weatherDataRows)
-            Email.sendEmail(emailAddress, "Daily Weather Watcher Summary", emailBody)
 
-            // record the date of the last email sent
-            LastRunInfo.writeNewVal(this.lastRunInfoDailySummaryEmailKey, LocalDateTime.now().toString())
+            if(emailBody) {
+                Email.sendEmail(emailAddress, "Daily Weather Watcher Summary", emailBody)
+
+                // record the date of the last email sent
+                LastRunInfo.writeNewVal(this.lastRunInfoDailySummaryEmailKey, LocalDateTime.now().toString())
+            }
         }
     }
 
     private String makeEmailBody(List<String> weatherDataRows){
         List<WeatherDataRow> wdrs = getYesterdaysWeatherDataRows(weatherDataRows)
+
+        if(wdrs.size() == 0) {
+            log.info("There isn't any weather data from yesterday.  The computer must not be plugged in correctly.  Not sending an email.")
+            return null
+        }
+
         WeatherDataRow lowOutdoorTemp = wdrs.get(0)
         WeatherDataRow highOutdoorTemp = wdrs.get(0)
         WeatherDataRow lowIndoorTemp = wdrs.get(0)
@@ -132,7 +141,7 @@ class DailySummary {
         LocalDateTime startOfYesterday = LocalDateTime.of(yesterday.year, yesterday.monthValue, yesterday.dayOfMonth, 0, 0, 0)
         LocalDateTime endOfYesterday = LocalDateTime.of(yesterday.year, yesterday.monthValue, yesterday.dayOfMonth, 23, 59, 59)
 
-        while(stillLooking){
+        while(stillLooking && row > 0){
             WeatherDataRow wdr = new WeatherDataRow(weatherDataRows.get(row))
             if(wdr.timestamp >= startOfYesterday && wdr.timestamp <= endOfYesterday){
                 wdrs.add(wdr)
