@@ -12,6 +12,8 @@ repositories {
 }
 
 dependencies {
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-imaging
+    compile group: 'org.apache.commons', name: 'commons-imaging', version: '1.0-alpha2'
     compile 'org.codehaus.groovy:groovy-all:2.3.11'
     compile 'org.slf4j:slf4j-simple:1.7.12'
     compile "commons-io:commons-io:2.1"
