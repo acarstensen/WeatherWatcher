@@ -21,7 +21,6 @@ import com.google.api.client.util.store.FileDataStoreFactory
 import com.google.api.services.gmail.Gmail
 import com.google.api.services.gmail.GmailScopes
 import com.google.api.services.gmail.model.Message
-import com.sun.xml.internal.messaging.saaj.packaging.mime.MessagingException
 import org.apache.commons.codec.binary.Base64
 
 import javax.mail.Session
@@ -48,9 +47,8 @@ class Email {
      * @param subject subject of the email
      * @param bodyText body text of the email
      * @return the MimeMessage to be used to send email
-     * @throws MessagingException
      */
-    public static MimeMessage createEmail(String to, String from, String subject, String bodyText) throws MessagingException {
+    public static MimeMessage createEmail(String to, String from, String subject, String bodyText) {
         Properties props = new Properties();
         Session session = Session.getDefaultInstance(props, null);
         MimeMessage email = new MimeMessage(session);
@@ -82,9 +80,8 @@ class Email {
      * @param emailContent Email to be set to raw of message
      * @return a message containing a base64url encoded email
      * @throws IOException
-     * @throws MessagingException
      */
-    public static Message createMessageWithEmail(MimeMessage emailContent) throws MessagingException, IOException {
+    public static Message createMessageWithEmail(MimeMessage emailContent) {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         emailContent.writeTo(buffer);
         byte[] bytes = buffer.toByteArray();
